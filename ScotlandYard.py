@@ -29,7 +29,7 @@ def SetupMap():
 
 def RandomStartLocs(NoPlayers):
     global MrXLoc, PlayerLocs
-    PossibleStartLocs = (1,3,6,9,11,13)
+    PossibleStartLocs = [13,26,29,34,50,53,91,94,103,112,117,132,138,141,155,174,197,198]
     StartLocs = random.sample(PossibleStartLocs, NoPlayers+1)
     MrXLoc = [StartLocs[0]]     # creates list with first value random
     PlayerLocs = StartLocs[1:]
@@ -87,18 +87,19 @@ def MrXMove():
 
 
 # Main Program Start Here 
-taxi, bus, underground = SetupMap()
-NoPlayers = 5
-ttxt = 'taxi',
-btxt = 'bus',
-utxt = 'underground',
-MrXTransport = ['start']
-Turn = 1
-RandomStartLocs(NoPlayers)
+if __name__ == '__main__':
+    taxi, bus, underground = SetupMap()
+    NoPlayers = 5
+    ttxt = 'taxi',
+    btxt = 'bus',
+    utxt = 'underground',
+    MrXTransport = ['start']
+    Turn = 1
+    RandomStartLocs(NoPlayers)
 
-while Turn<10:
-    MrXMove()
-    Turn += 1
+    while Turn<10:
+        MrXMove()
+        Turn += 1
 
 
 
