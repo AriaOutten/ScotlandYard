@@ -1,0 +1,5 @@
+# Avoid swap files
+*.swp
+*.swo
+
+
