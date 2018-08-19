@@ -15,7 +15,7 @@ import random, operator, csv
 
 def SetupMap():
     flag = -1
-    map_dat = [{},{},{}]
+    map_dat = [{},{},{},{}]
     with open('Map_ScotlandYard.dat', mode='r') as infile:
         reader = csv.reader(infile)
         for rows in reader: 
@@ -23,7 +23,7 @@ def SetupMap():
                 flag=flag+1
                 continue
             map_dat[flag][int(rows[0])] = list(map(int, rows[1:]))
-    return map_dat[0], map_dat[1], map_dat[2]
+    return map_dat[0], map_dat[1], map_dat[2], map_dat[3]
     
 
 
@@ -88,7 +88,7 @@ def MrXMove():
 
 # Main Program Start Here 
 if __name__ == '__main__':
-    taxi, bus, underground = SetupMap()
+    taxi, bus, underground, ferry = SetupMap()
     NoPlayers = 5
     ttxt = 'taxi',
     btxt = 'bus',
