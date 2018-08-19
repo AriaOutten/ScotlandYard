@@ -4,13 +4,10 @@
 # Randomly selects where to move to
 # Checks players move and tracks all peices
 #
-# Written by Stephen Outten August 2018
+# Written by Stephen Outten and Aria Outten August 2018
 
-import sys
-sys.path.append('/home/everlone/Python/ScotlandYard')
-
-import random, operator, csv
-#from ScotlandYard_Map import taxi, bus, underground
+# import sys
+# sys.path.append('/home/everlone/Python/ScotlandYard')
 
 
 def SetupMap():
