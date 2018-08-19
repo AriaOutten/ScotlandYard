@@ -4,16 +4,22 @@
 # Randomly selects where to move to
 # Checks players move and tracks all peices
 #
+# Currently has arguments for SetupMap
+# and RandomStartLocs to enable testing options.
+# These can be stripped in the final version.
+#
 # Written by Stephen Outten and Aria Outten August 2018
 
-# import sys
-# sys.path.append('/home/everlone/Python/ScotlandYard')
+import csv, random
 
-
-def SetupMap():
+def SetupMap(Testing):
     flag = -1
     map_dat = [{},{},{},{}]
-    with open('Map_ScotlandYard.dat', mode='r') as infile:
+    if Testing:
+        map_fn = 'Map_ScotlandYard_Testing.dat'
+    else: 
+        map_fn = 'Map_ScotlandYard.dat'
+    with open(map_fn, mode='r') as infile:
         reader = csv.reader(infile)
         for rows in reader: 
             if len(rows)==1:
@@ -24,9 +30,12 @@ def SetupMap():
     
 
 
-def RandomStartLocs(NoPlayers):
+def RandomStartLocs(NoPlayers,Testing):
     global MrXLoc, PlayerLocs
-    PossibleStartLocs = [13,26,29,34,50,53,91,94,103,112,117,132,138,141,155,174,197,198]
+    if Testing:
+        PossibleStartLocs = [1,3,5,7,9,13]    # for use with testing map
+    else:
+        PossibleStartLocs = [13,26,29,34,50,53,91,94,103,112,117,132,138,141,155,174,197,198]
     StartLocs = random.sample(PossibleStartLocs, NoPlayers+1)
     MrXLoc = [StartLocs[0]]     # creates list with first value random
     PlayerLocs = StartLocs[1:]
@@ -85,14 +94,15 @@ def MrXMove():
 
 # Main Program Start Here 
 if __name__ == '__main__':
-    taxi, bus, underground, ferry = SetupMap()
+    Testing = True
+    taxi, bus, underground, ferry = SetupMap(Testing)
     NoPlayers = 5
     ttxt = 'taxi',
     btxt = 'bus',
     utxt = 'underground',
     MrXTransport = ['start']
     Turn = 1
-    RandomStartLocs(NoPlayers)
+    RandomStartLocs(NoPlayers,Testing)
 
     while Turn<10:
         MrXMove()
