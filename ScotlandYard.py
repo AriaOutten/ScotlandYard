@@ -10,9 +10,18 @@
 #
 # Written by Stephen Outten and Aria Outten August 2018
 
-import csv, random
+import csv, random, tabulate
 
 def SetupMap(Testing):
+    '''
+    SetupMap(Testing)
+    Load the transport connections that map up the map
+    as four dictionaries, one for each type of transport.
+    Usage:
+      taxi,bus,underground,ferry = SetupMap(True/False)
+       arg=True - loads a smaller test map.
+       arg=Flase - loads the full game board map.
+    '''
     flag = -1
     map_dat = [{},{},{},{}]
     if Testing:
@@ -31,69 +40,73 @@ def SetupMap(Testing):
 
 
 def RandomStartLocs(NoPlayers,Testing):
-    global MrXLoc, PlayerLocs
+    '''
+    RandomStartLocs(NoPlayes,Testing)
+    Randomly assigns starting locations to each of the players and Mr X.
+    Usage: MrXLoc, PlayerLocs = RandomStartLocs(NoPlayers,Testing)
+      MrXLoc - Starting location for Mr X.
+      PlayerLocs - Starting location for players.
+      NoPlayers - Integer number of players.
+      Testing - Boolean - True using locations for testing map, False uses locations from game. 
+    '''
     if Testing:
         PossibleStartLocs = [1,3,5,7,9,13]    # for use with testing map
     else:
         PossibleStartLocs = [13,26,29,34,50,53,91,94,103,112,117,132,138,141,155,174,197,198]
     StartLocs = random.sample(PossibleStartLocs, NoPlayers+1)
-    MrXLoc = [StartLocs[0]]     # creates list with first value random
-    PlayerLocs = StartLocs[1:]
-    i = 0
-    while i<len(PlayerLocs):
-      StartLocText = 'Player ' + str(i+1) + ' starts at ' + str(PlayerLocs[i])
+    MrXStartLoc = [StartLocs[0]]     # creates list with first value random
+    PlayerStartLocs = StartLocs[1:]
+    for loc in range(len(PlayerStartLocs)):
+      StartLocText = 'Player ' + str(loc+1) + ' starts at ' + str(PlayerStartLocs[loc])
       print(StartLocText)
-      i += 1
+    return MrXStartLoc, PlayerStartLocs
 
 
-def MrXMove():
+def MrXMove(curloc):
     '''
-    Create list of Mr X's posisble exists 
-    Reduce list removing duplicates
-    Radnomly select one of the exits
-    Create list of available modes to reach exit
-    Randomly seelct one of the modes
-    Update MrXLoc and MrXTransport with exit and mode
+    MrXMove(curloc)
+    Selects and returns Mr X's next location and th transport to get there.
+    Usage: newloc,transport = MrXMove(curloc)
+      curloc - Mr X's current location
+      newloc - Location Mr X moves to
+      transport - Transport Mr X used to move to new location
+    This fuction get possible exits, randomly selects one, randomly selects mode of transport.
     '''
 
-    global MrXLoc, MrXTransport
-
-    if MrXLoc[Turn-1] in underground:
-        pos_exits = taxi[MrXLoc[Turn-1]] + bus[MrXLoc[Turn-1]] + underground[MrXLoc[Turn-1]]
-    elif MrXLoc[Turn-1] in bus:
-        pos_exits = taxi[MrXLoc[Turn-1]] + bus[MrXLoc[Turn-1]]
+    if curloc in underground:
+        pos_exits = taxi[curloc] + bus[curloc] + underground[curloc]
+    elif curloc in bus:
+        pos_exits = taxi[curloc] + bus[curloc]
     else:
-        pos_exits = taxi[MrXLoc[Turn-1]]
+        pos_exits = taxi[curloc]
         
     # Reduces list of exits
     pos_exits = tuple(set(pos_exits))
 
     # Randomly select exit
     RandMove = random.randint(0,len(pos_exits)-1)
-    NextMove = pos_exits[RandMove]
+    newloc = pos_exits[RandMove]
     print(pos_exits)        # FOR DEBUG
-    print(NextMove)  # FRO DEBUG
+    print(newloc)  # FRO DEBUG
     
     # Create list of availabel modes of travel
     pos_travel = []
-    if MrXLoc[Turn-1] in underground: pos_travel.append('undergorund')
-    if MrXLoc[Turn-1] in bus: pos_travel.append('bus')
-    if MrXLoc[Turn-1] in taxi: pos_travel.append('taxi')
+    if curloc in underground: pos_travel.append('underground')
+    if curloc in bus: pos_travel.append('bus')
+    if curloc in taxi: pos_travel.append('taxi')
     
     # Randomly select mode of transport to reach exit
     RandTran = random.randint(0,len(pos_travel)-1)
-    NextTran = pos_travel[RandTran]
+    transport = pos_travel[RandTran]
     
-    # Update MrXLoc and MrXTransport
-    MrXLoc.append(NextMove)
-    MrXTransport.append(NextTran)
-    print(NextTran)  # FOR DEBUG
+    print(transport)  # FOR DEBUG
 
-
+    return newloc, transport
 
 
 # Main Program Start Here 
 if __name__ == '__main__':
+    # Setup initial variables, including map dictionaries
     Testing = True
     taxi, bus, underground, ferry = SetupMap(Testing)
     NoPlayers = 5
@@ -102,10 +115,21 @@ if __name__ == '__main__':
     utxt = 'underground',
     MrXTransport = ['start']
     Turn = 1
-    RandomStartLocs(NoPlayers,Testing)
+ 
+    # Setup initial locations and transportations 
+    Locations = [['Mr X']]
+    for player in range(NoPlayers): Locations.append(['Player '+str(player+1)])
+    MrXStartLoc,PlayerStartLocs = RandomStartLocs(NoPlayers,Testing)
+    Locations[0].append(MrXStartLoc[0])
+    for player in range(NoPlayers): Locations[player+1].append(PlayerStartLocs[player])
+    Transports = [['Start']]
+    for player in range(NoPlayers): Transports.append(['Start'])
+    print(tabulate.tabulate(Locations))
 
     while Turn<10:
-        MrXMove()
+        newloc, transport = MrXMove(Locations[0][Turn])
+        Locations[0].append(newloc)
+        Transports[0].append(transport)
         Turn += 1
 
 
